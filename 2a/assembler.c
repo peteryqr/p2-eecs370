@@ -36,6 +36,7 @@ void writeO(FILE *, char *);
 static void checkForBlankLinesInCode(FILE *inFilePtr);
 static inline int isNumber(char *);
 static inline int searchLabel(char labels[][7], char *string);
+static inline int searchUnd(char stLabel[][7], char *string);
 static inline int isGlobalSymbol(char *string);
 static inline void printHexToFile(FILE *, int);
 void printBinary(int num);
@@ -136,7 +137,7 @@ int main(int argc, char **argv)
         {
             strcpy(rtLabel[rtIndex], arg0);
             strcpy(rtOpcode[rtIndex], ".fill");
-            stOffset[rtIndex] = dataSize - 1;
+            rtOffset[rtIndex] = dataSize - 1;
             ++rtIndex;
         }
         else if ((!strcmp(opcode, "lw") || !strcmp(opcode, "sw")) && !isNumber(arg2))
@@ -158,7 +159,8 @@ int main(int argc, char **argv)
         // symbol address only appear in lw, sw, or .fill as arguments (not label)
         if (!strcmp(opcode, "lw") || !strcmp(opcode, "sw"))
         {
-            if (isGlobalSymbol(arg2) && !searchLabel(labels, arg2))
+            // three conditions, arg2 is global label, arg2 is undefined, arg2 is not in the symbol table
+            if (isGlobalSymbol(arg2) && !searchLabel(labels, arg2) && !searchUnd(stLabel, arg2))
             {
                 // fails to find the label
                 strcpy(stLabel[stIndex], arg2);
@@ -169,7 +171,7 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(opcode, ".fill"))
         {
-            if (isGlobalSymbol(arg0) && !searchLabel(labels, arg0))
+            if (isGlobalSymbol(arg0) && !searchLabel(labels, arg0) && !searchUnd(stLabel, arg0))
             {
                 // fails to find the label
                 strcpy(stLabel[stIndex], arg0);
@@ -209,7 +211,7 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(opcode, ".fill"))
         {
-            int mc;
+            int mc = 0;
             if (!isNumber(arg0))
             { // offset is a symbolic address
                 int i = 0;
@@ -411,6 +413,22 @@ searchLabel(char labels[][7], char *string)
     while (i != MAXLINELENGTH)
     {
         if (!strcmp(labels[i], string))
+        {
+            return 1;
+        }
+        ++i;
+    }
+    return 0;
+}
+
+static inline int searchUnd(char stLabel[][7], char *string)
+{
+    int i = 0;
+    while (i != MAXLINELENGTH)
+    {
+        if (!strcmp(stLabel[i], ""))
+            break;
+        if (!strcmp(stLabel[i], string))
         {
             return 1;
         }
