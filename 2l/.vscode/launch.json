@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Project 2l",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/renyueqi/eecs370/p2-eecs370/2l/linker",
+            //Change fileDirname to workspaceFolder if there are issues: see code.visualstudio.com/docs/editor/variables-reference
+            "args": [
+                "test5_0.obj",
+                "test5_1.obj",
+                "test5.mc"
+            ],
+            "stopAtEntry": true,
+            "cwd": "/home/renyueqi/eecs370/p2-eecs370/2l",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}
